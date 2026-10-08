@@ -1,0 +1,16 @@
+name: Power Manager host tests
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+jobs:
+  host:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure
+        run: cmake -S tests -B build/host -DCMAKE_BUILD_TYPE=Debug
+      - name: Compile
+        run: cmake --build build/host --parallel
+      - name: Test
+        run: ctest --test-dir build/host --output-on-failure
