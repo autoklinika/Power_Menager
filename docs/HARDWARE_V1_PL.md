@@ -37,13 +37,16 @@
 
 ## Połączenia niskonapięciowe
 
+Szczegółowa tabela fizycznych pinów J1, połączenia styków COM/NO oraz procedura testowa: [DFR0473_WIRING_PL.md](DFR0473_WIRING_PL.md).
+
+
 | KAmod ESP32 POW+RS485 | Element | Podłączenie |
 |---|---|---|
-| GPIO16 | DFR0473 #1 | D (IN) |
-| GPIO17 | DFR0473 #2 | D (IN) |
-| GPIO18 | DFR0473 #3 | D (IN) |
-| 3V3 | 3 x DFR0473 | VCC (potwierdzić bilans prądowy 3V3, maks. KAmod 1 A ciągle) |
-| GND | 3 x DFR0473 | GND |
+| GPIO16, J1 fizyczny pin 26 | DFR0473 #1 | D (IN) |
+| GPIO17, J1 fizyczny pin 11 | DFR0473 #2 | D (IN) |
+| GPIO18, J1 fizyczny pin 33 | DFR0473 #3 | D (IN) |
+| 3V3, J1 fizyczny pin 17 | 3 x DFR0473 | `+` / VCC 3,3 V (potwierdzić pobór prądu wszystkich modułów, regulator KAmod 1 A ciągle) |
+| GND, J1 fizyczny pin 25 lub 34 | 3 x DFR0473 | `−` / GND |
 | GPIO33 | INA228 | SDA |
 | GPIO32 | INA228 | SCL |
 | 3V3 | INA228 | VIN / logic power |
