@@ -1,0 +1,12 @@
+# ESP-IDF local build and configuration
+build/
+sdkconfig
+sdkconfig.old
+managed_components/
+dependencies.lock
+# IDE
+.vscode/
+.idea/
+.DS_Store
+__pycache__/
+*.pyc

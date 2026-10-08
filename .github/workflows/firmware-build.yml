@@ -1,0 +1,16 @@
+name: ESP-IDF firmware build
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+jobs:
+  firmware:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build esp32 firmware (output actuation disabled by default)
+        uses: espressif/esp-idf-ci-action@v1
+        with:
+          esp_idf_version: v5.4.1
+          target: esp32
+          path: .
