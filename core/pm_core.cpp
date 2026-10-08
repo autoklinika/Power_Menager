@@ -55,7 +55,7 @@ bool Controller::command(const Command &cmd, uint32_t now_ms) {
   // Safety-off deliberately works even with an obsolete boot token or sequence.
   if (cmd.operation == Op::EmergencyOff && cmd.output_mask == 0) {
     outputs_ = 0;
-    state_ = State::SafeOff;
+    state_ = faults_ ? State::Fault : State::SafeOff;
     return true;
   }
   if (cmd.boot_id != boot_id_ ||
@@ -87,7 +87,7 @@ bool Controller::command(const Command &cmd, uint32_t now_ms) {
       break;
     case Op::Disarm:
       outputs_ = 0;
-      state_ = State::SafeOff;
+      state_ = faults_ ? State::Fault : State::SafeOff;
       break;
     default:
       return false;

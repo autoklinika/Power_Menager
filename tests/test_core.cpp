@@ -1,5 +1,6 @@
 #include "pm_core.hpp"
 #include "pm_modbus.hpp"
+#include "pm_ina228_math.hpp"
 #include <cassert>
 #include <cstdint>
 #include <iostream>
@@ -111,6 +112,21 @@ int main() {
   assert(stale.command({nonce, 1, Op::Arm, 0}, 1));
   stale.tick(302);
   assert(stale.faults() & SensorStale);
+
+  // INA228 two's-complement and fixed-point conversions (15 mOhm, ADCRANGE=0).
+  assert(bus_raw_to_mv(143360u << 4) == 28000);
+  assert(shunt_raw_to_ma(480000u << 4) == 10000);
+  assert(shunt_raw_to_ma(((1u << 20) - 480000u) << 4) == -10000);
+  assert(decode_signed20(((1u << 20) - 1u) << 4) == -1);
+  assert(decode_signed20(0) == 0);
+
+  Controller fault_disarm(nonce, true);
+  fault_disarm.observe(good, 10);
+  assert(fault_disarm.command({nonce, 1, Op::Arm, 0}, 11));
+  fault_disarm.observe({true, 30000, 0}, 12);
+  assert(fault_disarm.state() == State::Fault);
+  assert(fault_disarm.command({nonce, 2, Op::Disarm, 0}, 13));
+  assert(fault_disarm.state() == State::Fault);
 
   std::cout << "Power Manager host tests: PASS\n";
 }
