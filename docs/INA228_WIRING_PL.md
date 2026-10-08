@@ -54,6 +54,23 @@ Dokumentacja producenta: https://learn.adafruit.com/adafruit-ina228-i2c-power-mo
 
 Na PCB są **dwa różne napisy**: `VIN` (power 3.3 V) oraz `VIN+` (plus szyny DUT). Nie mylić.
 
+### Zworki adresowe A0 i A1 — ustawienie produkcyjne V1
+
+Dla **jednego** INA228 w Power Manager V1 obie zworki adresowe na spodzie modułu pozostają **OTWARTE** (nic nie lutować). Przy tym ustawieniu adres 7-bitowy I²C to **0x40**, zgodnie z `main/ina228.cpp` (`kInaAddress = 0x40`).
+
+| A0 | A1 | Adres I²C |
+|---|---|---|
+| otwarta | otwarta | **0x40** (Power Manager V1) |
+| zlutowana | otwarta | 0x41 |
+| otwarta | zlutowana | 0x44 |
+| zlutowana | zlutowana | 0x45 |
+
+Zworki **A0/A1** dotyczą tylko adresu komunikacji I²C; nie mają związku z torami pomiarowymi VIN+/VIN−/VBUS ani z adresem **Modbus RTU slave 1** używanym pomiędzy KAmod i ECU Platform po RS485.
+
+Jeżeli kiedyś pojawi się drugi INA228, należy nadać mu inny adres i zaktualizować obsługę I²C w firmware. Wersja V1 wymaga `0x40`; po przelutowaniu zworki firmware nie odnajdzie sensora i pozostawi wyjścia zablokowane.
+
+Źródło: [Adafruit INA228 — Pinouts / Address Jumpers](https://learn.adafruit.com/adafruit-ina228-i2c-power-monitor/pinouts).
+
 ## 4. Co dokładnie mierzymy?
 
 - **Napięcie VBUS** — na wejściu czujnika, od strony źródła, czyli **przed bocznikiem i przed przekaźnikami**.
