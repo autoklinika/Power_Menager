@@ -1,0 +1,10 @@
+menu "Power Manager — safety"
+  config PM_ENABLE_PHYSICAL_OUTPUTS
+    bool "ALLOW real DFR0473 relay energization (lab-qualified hardware only)"
+    default n
+    help
+      Danger: this allows physical relays to energize under Modbus commands.
+      Enable only AFTER external pull-down resistors, individual fuses,
+      correctly rated wiring, INA228 high-side conversion, and bench safety
+      validation. Default is false and ARM returns Modbus exception 0x03.
+endmenu
