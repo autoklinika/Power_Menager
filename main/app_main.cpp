@@ -104,7 +104,7 @@ extern "C" void app_main(void) {
     apply_outputs(controller.outputs());
 
     const int received = uart_read_bytes(kRtuUart, incoming, sizeof incoming,
-                                         pdMS_TO_TICKS(5));
+                                         pdMS_TO_TICKS(10)); // >=1 RTOS tick at 100 Hz; yield idle/Task WDT.
     const int64_t time_us = esp_timer_get_time();
     if (received <= 0) {
       if (used && time_us - last_rx_us > kRxGapUs) used = 0;
