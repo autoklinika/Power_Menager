@@ -15,6 +15,7 @@ Samodzielny kontroler wykonawczy i telemetrii DUT dla **ECU Platform V2**. Imple
 ## Dokumenty
 
 - [Schemat funkcjonalny i połączenia](docs/HARDWARE_V1_PL.md)
+- [Podłączenie INA228 QT — krok po kroku, J1 piny 1/3/5/6](docs/INA228_WIRING_PL.md)
 - [Kontrakt Modbus RTU V1](docs/MODBUS_RTU_V1_PL.md)
 - [Plan testów / bramki bezpieczeństwa](docs/BRAMKI_TESTOW_V1_PL.md)
 
