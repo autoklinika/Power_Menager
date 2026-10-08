@@ -13,6 +13,11 @@
 #include <cstdint>
 
 namespace {
+#if CONFIG_PM_ENABLE_PHYSICAL_OUTPUTS
+constexpr bool kOutputsCompiledIn = true;
+#else
+constexpr bool kOutputsCompiledIn = false;
+#endif
 constexpr const char *TAG = "power_manager";
 constexpr gpio_num_t kRelays[] = {GPIO_NUM_16, GPIO_NUM_17, GPIO_NUM_18};
 constexpr uart_port_t kRtuUart = UART_NUM_2;
@@ -67,13 +72,13 @@ void initialize_rs485() {
 extern "C" void app_main(void) {
   initialize_outputs_off(); // First executable action: all relays de-energized.
   const uint32_t boot_id = esp_random() | 1u; // Reboot freshness, NOT authentication.
-  pm::Controller controller(boot_id, CONFIG_PM_ENABLE_PHYSICAL_OUTPUTS);
+  pm::Controller controller(boot_id, kOutputsCompiledIn);
   pm::Ina228 sensor;
   const bool sensor_ready = sensor.begin();
   if (!sensor_ready) ESP_LOGE(TAG, "INA228 initialization failed; outputs locked off");
   initialize_rs485();
   ESP_LOGI(TAG, "Power Manager V1 booted; physical relay outputs %s",
-           CONFIG_PM_ENABLE_PHYSICAL_OUTPUTS ? "ENABLED" : "LOCKED");
+           kOutputsCompiledIn ? "ENABLED" : "LOCKED");
 
   uint8_t frame[pm::kMaxRtuFrame] = {};
   uint8_t incoming[64] = {};
