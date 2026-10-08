@@ -55,7 +55,7 @@
 
 GPIO34/ALERT nie jest używany przez firmware V1. Pomiar i odcięcie programowe działają w trybie okresowego odpytywania I²C.
 
-**Na GPIO16, GPIO17 i GPIO18 wymagany jest fizyczny rezystor 10 kΩ do GND przy module sterującym**: po resecie/bootloaderze ESP32 styki NO mają pozostać otwarte. Nie korzystać z NC. Zweryfikować miernikiem poziom logiczny, prąd sterowania i stan przekaźników podczas resetu, brownout, programowania USB i zaniku zasilania KAmod. Zabezpieczenie tylko firmware jest niewystarczające.
+**Na GPIO16, GPIO17 i GPIO18 wymagany jest fizyczny rezystor 10 kΩ do GND przy module sterującym**: po resecie/bootloaderze ESP32 styki NO mają pozostać otwarte. Nie korzystać z NC. Zweryfikować miernikiem poziom logiczny, prąd sterowania i stan przekaźników podczas resetu, brownout, programowania USB i zaniku zasilania KAmod. Zabezpieczenie tylko firmware jest niewystarczające. Task Watchdog ESP-IDF ma limit 5 s i wymusza restart; nie zastępuje sprzętowego watchdog/latch lub szybkiego wyłącznika prądowego.
 
 ## Obwody mocy i zabezpieczenia
 

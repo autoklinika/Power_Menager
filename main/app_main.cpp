@@ -6,6 +6,7 @@
 #include "esp_log.h"
 #include "esp_random.h"
 #include "esp_timer.h"
+#include "esp_task_wdt.h"
 #include "sdkconfig.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -72,13 +73,15 @@ void initialize_rs485() {
 extern "C" void app_main(void) {
   initialize_outputs_off(); // First executable action: all relays de-energized.
   const uint32_t boot_id = esp_random() | 1u; // Reboot freshness, NOT authentication.
-  pm::Controller controller(boot_id, kOutputsCompiledIn);
+  const bool watchdog_ready = esp_task_wdt_add(nullptr) == ESP_OK;
+  if (!watchdog_ready) ESP_LOGE(TAG, "Task WDT not available; relay outputs locked");
+  pm::Controller controller(boot_id, kOutputsCompiledIn && watchdog_ready);
   pm::Ina228 sensor;
   const bool sensor_ready = sensor.begin();
   if (!sensor_ready) ESP_LOGE(TAG, "INA228 initialization failed; outputs locked off");
   initialize_rs485();
   ESP_LOGI(TAG, "Power Manager V1 booted; physical relay outputs %s",
-           kOutputsCompiledIn ? "ENABLED" : "LOCKED");
+           (kOutputsCompiledIn && watchdog_ready) ? "ENABLED" : "LOCKED");
 
   uint8_t frame[pm::kMaxRtuFrame] = {};
   uint8_t incoming[64] = {};
@@ -89,6 +92,10 @@ extern "C" void app_main(void) {
 
   for (;;) {
     uint32_t now = milliseconds();
+    if (watchdog_ready && esp_task_wdt_reset() != ESP_OK) {
+      controller.observe(pm::Sample{}, now); // Fail closed on watchdog service error.
+      apply_outputs(0);
+    }
     if (now - last_sample_ms >= kSamplePeriodMs) {
       controller.observe(sensor_ready ? sensor.read() : pm::Sample{}, now);
       last_sample_ms = now;

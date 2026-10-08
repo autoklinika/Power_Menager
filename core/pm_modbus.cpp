@@ -65,6 +65,7 @@ bool handle_modbus(const uint8_t *request, size_t length, Controller &controller
     if (first != kCommandAddress || count != kCommandWords ||
         request[6] != kCommandWords * 2)
       return exception(request[0], fc, 0x02, response, capacity, out);
+    if (capacity < 8) return false;  // Never mutate outputs without reply capacity.
     Command cmd;
     cmd.boot_id = (static_cast<uint32_t>(be16(request + 7)) << 16) | be16(request + 9);
     cmd.sequence = be16(request + 11);
@@ -72,7 +73,6 @@ bool handle_modbus(const uint8_t *request, size_t length, Controller &controller
     cmd.output_mask = be16(request + 15);
     if (!controller.command(cmd, now_ms))
       return exception(request[0], fc, 0x03, response, capacity, out);
-    if (capacity < 8) return false;
     for (size_t i = 0; i < 6; ++i) response[i] = request[i];
     out = 6;
     append_crc(response, out);

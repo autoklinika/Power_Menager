@@ -81,6 +81,13 @@ int main() {
   size_t output_size = 0;
   assert(!handle_modbus(bad.data(), bad.size(), rt, 20, output, sizeof output, output_size));
   assert(rt.state() == State::SafeOff);
+  // A too-small response buffer must not energize relays or accept ARM.
+  uint8_t tiny_response[7] = {};
+  size_t tiny_response_len = 0;
+  const auto arm_request = command_frame(nonce, 1, 1, 0);
+  assert(!handle_modbus(arm_request.data(), arm_request.size(), rt, 20,
+                        tiny_response, sizeof tiny_response, tiny_response_len));
+  assert(rt.state() == State::SafeOff);
   auto reply_arm = reply(command_frame(nonce, 1, 1, 0), rt, 20);
   assert(reply_arm.size() == 8 && reply_arm[1] == 0x10);
   auto reply_set = reply(command_frame(nonce, 2, 2, 7), rt, 25);
